@@ -15,7 +15,7 @@ const questions = [{
     {
       id: 'c',
       text: 'Jeff Goldblum'
-    },
+    }
   ]
 }]
 const { assert } = require('chai')
