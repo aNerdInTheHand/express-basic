@@ -1,4 +1,5 @@
 module.exports = {
   healthcheck: '/healthcheck',
-  questions: '/questions'
+  questions: '/questions',
+  submit: '/submit'
 }
