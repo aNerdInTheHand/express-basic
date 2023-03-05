@@ -10,5 +10,7 @@ module.exports = ({
 
   app.get(C.routes.healthcheck, handlers.healthcheck)
 
+  app.get(C.routes.questions, handlers.questions)
+
   app.use(middleware.errorHandler)
 }
