@@ -3,12 +3,12 @@ module.exports = ({
   app,
   cors,
   corsOptions,
-  bodyParser,
+  expressJson,
   handlers,
   middleware
 }) => {
   // handle POST requsts
-  app.use(bodyParser())
+  app.use(expressJson())
 
   app.use(cors(corsOptions))
 

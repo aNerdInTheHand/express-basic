@@ -1,7 +1,6 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const bodyParser = require('body-parser')
 
 const C = require('./constants')
 const questions = require('./data/quiz.json')
@@ -11,6 +10,15 @@ const initHealthcheckHandler = require('./handlers/healthcheck')
 const initQuestionsHandler = require('./handlers/questions')
 const initSubmitHandler = require('./handlers/submit')
 const initErrorHandler = require('./middleware/errorHandling')
+const initCalculateScore = require('./helpers/calculateScore')
+
+const answerIsCorrect = require('./helpers/answerIsCorrect')
+const calculateScore = initCalculateScore({
+  C,
+  answerIsCorrect,
+  questions
+})
+
 const routing = require('./routing')
 
 const corsOptions = {
@@ -20,7 +28,12 @@ const corsOptions = {
 const handlers = {
   healthcheck: initHealthcheckHandler({ C, logger }),
   questions: initQuestionsHandler({ C, logger, questions }),
-  submit: initSubmitHandler({ C, logger })
+  submit: initSubmitHandler({
+    C,
+    calculateScore,
+    logger,
+    maxScore: questions.length
+  })
 }
 
 const middleware = {
@@ -31,7 +44,8 @@ routing({
   C,
   app,
   cors,
-  bodyParser,
+  corsOptions,
+  expressJson: express.json,
   handlers,
   middleware
 })
