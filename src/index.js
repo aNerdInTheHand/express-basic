@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const bodyParser = require('body-parser')
 
 const C = require('./constants')
 const questions = require('./data/quiz.json')
@@ -30,7 +31,7 @@ routing({
   C,
   app,
   cors,
-  expressJson: express.json,
+  bodyParser,
   handlers,
   middleware
 })

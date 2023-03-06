@@ -2,7 +2,7 @@ const port = 3000
 
 module.exports = {
   allowedOrigins: {
-    local: 'http://localhost:5173' // svelte application
+    local: '*' // svelte application
   },
   codes: {
     internalError: 500,

@@ -10,7 +10,7 @@ module.exports = ({
       .send({ text: 'Results submitted. You suck.' })
   } catch (error) {
     res
-      .status(C.server.codes.internallError)
+      .status(C.server.codes.internalError)
       .send('Womp womp')
   }
 }
