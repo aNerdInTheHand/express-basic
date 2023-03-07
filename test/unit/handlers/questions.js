@@ -1,8 +1,8 @@
 const initQuestionsHandler = require('../../../src/handlers/questions')
 const C = require('../../../src/constants')
-const questions = [{
+const questionsNoAnswers = [{
+  id: 1,
   question: 'What have I got in my pocket?',
-  answer: 'c',
   options: [
     {
       id: 'a',
@@ -18,7 +18,12 @@ const questions = [{
     }
   ]
 }]
-const { assert } = require('chai')
+const questions = questionsNoAnswers
+  .map(question => Object.assign(
+    {},
+    { ...question },
+    { answer: 'c' }
+  ))
 
 describe('handlers/questions', () => {
   const sandbox = sinon.createSandbox()
@@ -30,7 +35,8 @@ describe('handlers/questions', () => {
     logSpy,
     resMock,
     statusStub,
-    sendSpy
+    sendSpy,
+    stripAnswersStub
 
   beforeEach(() => {
     errorSpy = sinon.spy()
@@ -50,6 +56,15 @@ describe('handlers/questions', () => {
     }
 
     statusStub.returns(resMock)
+
+    stripAnswersStub = sinon.stub()
+
+    stripAnswersStub
+      .withArgs({ questions })
+      .returns(questionsNoAnswers)
+
+    stripAnswersStub
+      .returns('stripAnswersStub not calledWith questions')
   })
 
   afterEach(() => {
@@ -60,7 +75,8 @@ describe('handlers/questions', () => {
     const questionsHandler = initQuestionsHandler({
       C,
       logger: consoleMock,
-      questions
+      questions,
+      stripAnswers: stripAnswersStub
     })
 
     questionsHandler(req, resMock)
@@ -71,11 +87,28 @@ describe('handlers/questions', () => {
     )
   })
 
+  it('should call stripAnswers with questions', () => {
+    const questionsHandler = initQuestionsHandler({
+      C,
+      logger: consoleMock,
+      questions,
+      stripAnswers: stripAnswersStub
+    })
+
+    questionsHandler(req, resMock)
+
+    assert(
+      stripAnswersStub.calledOnceWith({ questions }),
+      'stripAnswers not called as expected'
+    )
+  })
+
   it('should set the status code to 200', () => {
     const questionsHandler = initQuestionsHandler({
       C,
       logger: consoleMock,
-      questions
+      questions,
+      stripAnswers: stripAnswersStub
     })
 
     questionsHandler(req, resMock)
@@ -90,21 +123,27 @@ describe('handlers/questions', () => {
     const questionsHandler = initQuestionsHandler({
       C,
       logger: consoleMock,
-      questions
+      questions,
+      stripAnswers: stripAnswersStub
     })
 
     questionsHandler(req, resMock)
 
     assert(
-      sendSpy.calledOnceWith(questions),
-      'res.send not called with questions'
+      sendSpy.calledOnceWith(questionsNoAnswers),
+      'res.send not called with questions without answers'
     )
   })
 
   it('should throw an error', () => {
     statusStub.throws(Error('some error'))
 
-    const questionsHandler = initQuestionsHandler({ C, logger: consoleMock, questions })
+    const questionsHandler = initQuestionsHandler({
+      C,
+      logger: consoleMock,
+      questions,
+      stripAnswers: stripAnswersStub
+    })
 
     assert.throws(
       () => questionsHandler(req, resMock),

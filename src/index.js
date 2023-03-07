@@ -13,6 +13,7 @@ const initErrorHandler = require('./middleware/errorHandling')
 const initCalculateScore = require('./helpers/calculateScore')
 
 const answerIsCorrect = require('./helpers/answerIsCorrect')
+const stripAnswers = require('./helpers/stripAnswers')
 const calculateScore = initCalculateScore({
   C,
   answerIsCorrect,
@@ -26,8 +27,16 @@ const corsOptions = {
 }
 
 const handlers = {
-  healthcheck: initHealthcheckHandler({ C, logger }),
-  questions: initQuestionsHandler({ C, logger, questions }),
+  healthcheck: initHealthcheckHandler({
+    C,
+    logger
+  }),
+  questions: initQuestionsHandler({
+    C,
+    logger,
+    questions,
+    stripAnswers
+  }),
   submit: initSubmitHandler({
     C,
     calculateScore,
